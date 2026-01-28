@@ -66,6 +66,11 @@
                             class="flex items-center px-4 py-3 rounded-lg transition duration-200 {{ request()->routeIs('admin.*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700 hover:text-white' }}">
                             <i class="fas fa-crown w-5 text-center mr-3"></i> Kelola Quest
                         </a>
+
+                        <a href="{{ route('admin.list_users.index') }}"
+                            class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.list_users.*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700' }}">
+                            <i class="fas fa-users w-5 text-center mr-3"></i> Data List User
+                        </a>
                     @endif
 
                     @if (Auth::user()->role == 'member' || Auth::user()->role == 'admin')

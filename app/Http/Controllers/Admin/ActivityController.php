@@ -39,4 +39,29 @@ class ActivityController extends Controller
         return redirect()->route('admin.activities.index')
             ->with('success', 'Activity or Quest created successfully!');
     }
+
+    public function trash()
+    {
+        $activities = Activity::onlyTrashed()->latest()->get();
+        return view('admin.activities.trash', compact('activities'));
+    }
+
+    public function restore($id)
+    {
+        $activity = Activity::withTrashed()->findOrFail($id);
+        $activity->restore();
+
+        return redirect()->route('admin.activities.index')
+            ->with('success', 'Quest berhasil dibangkitkan kembali!');
+    }
+
+    // 3. Hapus Permanen (Force Delete)
+    public function forceDelete($id)
+    {
+        $activity = Activity::withTrashed()->findOrFail($id);
+        $activity->forceDelete();
+
+        return redirect()->route('admin.activities.trash')
+            ->with('success', 'Quest telah dimusnahkan selamanya.');
+    }
 }
