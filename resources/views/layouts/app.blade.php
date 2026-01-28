@@ -62,13 +62,15 @@
                         <p class="px-2 text-xs font-semibold text-yellow-500 uppercase tracking-wider mb-2 mt-6">
                             Admin Area
                         </p>
+
+                        {{-- 'admin.activities*' --}}
                         <a href="{{ route('admin.activities.index') }}"
-                            class="flex items-center px-4 py-3 rounded-lg transition duration-200 {{ request()->routeIs('admin.*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700 hover:text-white' }}">
+                            class="flex items-center px-4 py-3 rounded-lg transition duration-200 {{ request()->routeIs('admin.activities*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700 hover:text-white' }}">
                             <i class="fas fa-crown w-5 text-center mr-3"></i> Kelola Quest
                         </a>
 
                         <a href="{{ route('admin.list_users.index') }}"
-                            class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.list_users.*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700' }}">
+                            class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.list_users*') ? 'bg-yellow-600 text-white shadow-lg' : 'text-yellow-200 hover:bg-yellow-700' }}">
                             <i class="fas fa-users w-5 text-center mr-3"></i> Data List User
                         </a>
                     @endif
