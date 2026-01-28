@@ -25,18 +25,18 @@ class ActivityController extends Controller
     public function store(Request $request)
     {
         // Validate input
-        $request->validate([
-            'title' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255', // Ubah dari title ke name
             'exp_reward' => 'required|integer|min:1',
             'icon' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
 
         // Create new activity
-        Activity::create($request->all());
+        Activity::create($validated);
 
         // Redirect to activities list with success message
         return redirect()->route('admin.activities.index')
-            ->with('success', 'Activity  created successfully!');
+            ->with('success', 'Activity or Quest created successfully!');
     }
 }

@@ -12,12 +12,17 @@ class Activity extends Model
     protected $fillable = [
         'name',
         'description',
+        'icon',
         'exp_reward', // Konsisten pakai 'exp'
-        'icon'
     ];
 
     // Relasi: Satu aktivitas bisa dikerjakan berkali-kali (masuk ke banyak log)
     public function logs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
+    public function activityLogs()
     {
         return $this->hasMany(ActivityLog::class);
     }

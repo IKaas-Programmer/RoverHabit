@@ -79,10 +79,14 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function activitylogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
     // User punya banyak badge
     public function badges()
     {
-        return $this->belongsToMany(Badge::class)->withTimestamps();
+        return $this->belongsToMany(Badge::class, 'badge_user')->withTimestamps();
     }
 
     // ==========================================

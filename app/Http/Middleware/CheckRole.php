@@ -35,9 +35,10 @@ class CheckRole
         }
 
         // Pengecualian: Jika role yang diminta 'member' (pengawas)
-        if ($role == 'member' && $user->role != 'member' && $user->role != 'admin') {
-            // Admin boleh masuk area member, tapi user biasa gak boleh
-            abort(403, 'Halaman Khusus Pengawas.');
+        if ($role == 'member') {
+            if ($user->role != 'member' && $user->role != 'admin') {
+                abort(403, 'Halaman Khusus Pengawas & Admin.');
+            }
         }
 
         return $next($request);
