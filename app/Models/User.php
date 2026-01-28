@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         // Tambahan Kolom Gamifikasi
         'level',
         'current_xp',
@@ -27,6 +28,25 @@ class User extends Authenticatable
         'current_streak',
         'last_activity_date',
     ];
+
+    // Definition Roles
+    const ROLE_ADMIN = 'admin';
+    const ROLE_MODERATOR = 'moderator';
+    const ROLE_USER = 'user';
+
+    // Helpers to check roles
+    public function isAdmin()
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+    public function isModerator()
+    {
+        return $this->role === self::ROLE_MODERATOR;
+    }
+    public function isUser()
+    {
+        return $this->role === self::ROLE_USER;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

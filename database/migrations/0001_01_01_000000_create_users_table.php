@@ -4,23 +4,35 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            // 1. Identitas Utama
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique(); // SUDAH DIPERBAIKI: Tambah unique()
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // 2. Kolom Gamifikasi 
+            $table->integer('level')->default(1);
+            $table->integer('current_exp')->default(0);
+            $table->integer('next_level_exp')->default(100);
+
+            // 3. Kolom Streak
+            // Kita namakan 'current_streak' biar cocok sama Controller sebelumnya
+            $table->integer('current_streak')->default(0);
+            $table->date('last_activity_date')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // Tabel bawaan Laravel (Password Reset & Sessions)
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
