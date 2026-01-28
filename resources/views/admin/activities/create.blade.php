@@ -39,9 +39,34 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Icon (Emoji)</label>
-                        <input type="text" name="icon" class="form-control" placeholder="Contoh: 💪 atau 📚"
-                            value="{{ old('icon') }}">
+                        <label class="form-label fw-bold">Kategori Quest (Warna)</label>
+                        <select name="icon" class="form-control" required>
+                            <option value="" disabled {{ old('icon') ? '' : 'selected' }}>-- Pilih Jenis Quest --
+                            </option>
+
+                            <option value="main" {{ old('icon') == 'main' ? 'selected' : '' }}>
+                                🟡 MainQuest (Kuning)
+                            </option>
+
+                            <option value="character" {{ old('icon') == 'character' ? 'selected' : '' }}>
+                                🟣 Development Character (Ungu)
+                            </option>
+
+                            <option value="exploration" {{ old('icon') == 'exploration' ? 'selected' : '' }}>
+                                🟢 Exploration (Hijau)
+                            </option>
+
+                            <option value="event" {{ old('icon') == 'event' ? 'selected' : '' }}>
+                                🟠 Event (Orange)
+                            </option>
+
+                            <option value="side" {{ old('icon') == 'side' ? 'selected' : '' }}>
+                                🔵 SideQuest (Biru)
+                            </option>
+                        </select>
+                        <div class="form-text text-muted">
+                            *Warna indikator akan muncul di daftar Quest sesuai kategori.
+                        </div>
                     </div>
 
                     <div class="mb-3">

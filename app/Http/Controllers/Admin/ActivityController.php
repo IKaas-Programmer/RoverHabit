@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Activity;
+use App\Http\Requests\Admin\StoreActivityRequest;
+use App\Http\Requests\Admin\UpdateActivityRequest;
 
 class ActivityController extends Controller
 {
@@ -22,22 +23,25 @@ class ActivityController extends Controller
     }
 
     // Save new activity to database
-    public function store(Request $request)
+    public function store(StoreActivityRequest $request)
     {
-        // Validate input
-        $validated = $request->validate([
-            'name' => 'required|string|max:255', // Ubah dari title ke name
-            'exp_reward' => 'required|integer|min:1',
-            'icon' => 'nullable|string',
-            'description' => 'nullable|string',
-        ]);
+        // Validasi sudah otomatis dijalankan oleh StoreActivityRequest.
+        // Jika gagal, Laravel otomatis menendang balik ke form.
+        // Jika lolos, kode di bawah ini baru jalan.
 
-        // Create new activity
-        Activity::create($validated);
+        Activity::create($request->validated());
 
-        // Redirect to activities list with success message
         return redirect()->route('admin.activities.index')
-            ->with('success', 'Activity or Quest created successfully!');
+            ->with('success', 'Quest baru berhasil dibuat!');
+    }
+
+    // Update existing activity
+    public function update(UpdateActivityRequest $request, Activity $activity)
+    {
+        $activity->update($request->validated());
+
+        return redirect()->route('admin.activities.index')
+            ->with('success', 'Quest berhasil diperbarui!');
     }
 
     public function trash()
