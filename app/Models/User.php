@@ -6,10 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +22,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
+        'last_active_at',
+
         // Tambahan Kolom Gamifikasi
         'level',
         'current_xp',
@@ -28,6 +32,7 @@ class User extends Authenticatable
         'current_streak',
         'last_activity_date',
     ];
+
 
     // Definition Roles
     const ROLE_ADMIN = 'admin';
@@ -67,6 +72,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'last_activity_date' => 'date', // Biar otomatis jadi format Tanggal
+        'last_active_at' => 'datetime',
     ];
 
     // ==========================================

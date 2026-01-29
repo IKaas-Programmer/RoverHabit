@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ListUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,28 +39,29 @@ Route::middleware('auth')->group(function () {
     // Admin Area (Prefix: /admin/...)
     Route::prefix('admin')->name('admin.')->group(function () {
 
-        // 1. FITUR SOFT DELETE (Taruh paling atas agar tidak bentrok)
+        // 1. FITUR Trash dan Restore (Soft Delete)
         Route::get('/activities/trash', [ActivityController::class, 'trash'])->name('activities.trash');
         Route::post('/activities/{id}/restore', [ActivityController::class, 'restore'])->name('activities.restore');
         Route::delete('/activities/{id}/force-delete', [ActivityController::class, 'forceDelete'])->name('activities.forceDelete');
 
-        // 2. KELOLA QUEST (CRUD Lengkap)
-        Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
-        Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');
-        Route::post('/activities', [ActivityController::class, 'store'])->name('activities.store');
+        // 2. KELOLA CRUD Utama (Secara Lengkap)
+        Route::resource('activities', ActivityController::class);
 
-        // Tambahan rute untuk Edit & Update & Delete
-        Route::get('/activities/{activity}/edit', [ActivityController::class, 'edit'])->name('activities.edit');
-        Route::put('/activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
-        Route::delete('/activities/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+        // ==========================================
+        // MODULE 2: DATA LIST USER (PLAYER)
+        // ==========================================
+        // Route Trash/Banned (Wajib ditaruh ATAS sebelum Resource)
+        Route::get('/list-users/trash', [ListUserController::class, 'trash'])->name('list_users.trash');
 
-        // 3. DATA LIST USER
-        Route::get('/users', [UserController::class, 'index'])->name('list_users.index');
+        // Route Restore (Un-banned User)
+        Route::post('/list-users/{id}/restore', [ListUserController::class, 'restore'])->name('list_users.restore');
+
+        // Route Utama (Index & Destroy/Banned)
+        Route::resource('list_users', ListUserController::class)->only(['index', 'destroy']);
     });
 
     // Member Area (Monitoring)
     Route::middleware('role:member')->group(function () {
-
         // Kita buat group prefix 'monitor' dan name 'monitor.'
         Route::prefix('monitor')->name('monitor.')->group(function () {
 

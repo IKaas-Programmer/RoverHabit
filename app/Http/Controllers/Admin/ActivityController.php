@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Activity;
 use App\Http\Requests\Admin\StoreActivityRequest;
 use App\Http\Requests\Admin\UpdateActivityRequest;
@@ -10,9 +11,24 @@ use App\Http\Requests\Admin\UpdateActivityRequest;
 class ActivityController extends Controller
 {
     // show list of activities
-    public function index()
+    public function index(Request $request)
     {
-        $activities = Activity::all();
+        // 1. Ambil parameter 'filter' dari URL (defaultnya null)
+        $filter = $request->query('filter');
+
+        // 2. Mulai Query dasar
+        $query = Activity::query();
+
+        // 3. Jika ada filter dan bukan 'all', tambahkan kondisi WHERE
+        if ($filter && $filter !== 'all') {
+            $query->where('icon', $filter);
+        }
+
+        // 4. Ambil datanya (Pagination 10 per halaman)
+        $activities = $query->latest()->paginate(10);
+
+        // Append query string agar saat pindah page 2, filternya tidak hilang
+        $activities->appends(['filter' => $filter]);
         return view('admin.activities.index', compact('activities'));
     }
 
@@ -20,6 +36,11 @@ class ActivityController extends Controller
     public function create()
     {
         return view('admin.activities.create');
+    }
+
+    public function edit(Activity $activity)
+    {
+        return view('admin.activities.edit', compact('activity'));
     }
 
     // Save new activity to database
@@ -44,9 +65,18 @@ class ActivityController extends Controller
             ->with('success', 'Quest berhasil diperbarui!');
     }
 
+    // Soft Delete activity
+    public function destroy(Activity $activity)
+    {
+        $activity->delete();
+
+        return redirect()->route('admin.activities.index')
+            ->with('success', 'Quest berhasil dipindahkan ke Trash Bin!');
+    }
+
     public function trash()
     {
-        $activities = Activity::onlyTrashed()->latest()->get();
+        $activities = Activity::onlyTrashed()->latest()->paginate(10);
         return view('admin.activities.trash', compact('activities'));
     }
 
@@ -56,10 +86,10 @@ class ActivityController extends Controller
         $activity->restore();
 
         return redirect()->route('admin.activities.index')
-            ->with('success', 'Quest berhasil dibangkitkan kembali!');
+            ->with('success', 'Quest berhasil dipulihkan kembali!');
     }
 
-    // 3. Hapus Permanen (Force Delete)
+    //  Hapus Permanen (Force Delete)
     public function forceDelete($id)
     {
         $activity = Activity::withTrashed()->findOrFail($id);

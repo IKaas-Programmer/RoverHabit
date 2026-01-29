@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="flex flex-col gap-6">
+
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-black text-gray-800 uppercase tracking-tight">
@@ -23,6 +24,49 @@
             </div>
         </div>
 
+        <div class="flex flex-wrap gap-2">
+            @php
+                // Helper function sederhana untuk menentukan style tombol aktif/tidak
+                $getBtnClass = function ($type, $colorName) {
+                    $isActive = request('filter') == $type || (request('filter') == null && $type == 'all');
+
+                    if ($isActive) {
+                        // Style AKTIF: Background Warna Solid, Text Putih, Shadow Glow
+                        return "bg-{$colorName}-500 text-white shadow-lg shadow-{$colorName}-200 border-{$colorName}-500 transform scale-105";
+                    } else {
+                        // Style TIDAK AKTIF: Putih, Text Warna, Border Tipis
+                        return "bg-white text-{$colorName}-600 border-gray-200 hover:border-{$colorName}-400 hover:bg-{$colorName}-50";
+                    }
+                };
+            @endphp
+
+            <a href="{{ route('admin.activities.index', ['filter' => 'all']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ request('filter') == 'all' || !request('filter') ? 'bg-gray-800 text-white shadow-lg' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-100' }}">
+                <i class="fas fa-layer-group mr-1"></i> All
+            </a>
+
+            <a href="{{ route('admin.activities.index', ['filter' => 'main']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ $getBtnClass('main', 'yellow') }}">
+                🟡 Main
+            </a>
+            <a href="{{ route('admin.activities.index', ['filter' => 'character']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ $getBtnClass('character', 'purple') }}">
+                🟣 Character
+            </a>
+            <a href="{{ route('admin.activities.index', ['filter' => 'exploration']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ $getBtnClass('exploration', 'emerald') }}">
+                🟢 World
+            </a>
+            <a href="{{ route('admin.activities.index', ['filter' => 'event']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ $getBtnClass('event', 'orange') }}">
+                🟠 Event
+            </a>
+            <a href="{{ route('admin.activities.index', ['filter' => 'side']) }}"
+                class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all duration-200 {{ $getBtnClass('side', 'blue') }}">
+                🔵 Side
+            </a>
+        </div>
+
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table class="w-full text-left">
                 <thead class="bg-gray-50 border-b border-gray-100">
@@ -40,7 +84,6 @@
 
                                     <div class="shrink-0">
                                         @php
-                                            // Tentukan Warna Berdasarkan Kategori
                                             $colorClass = match ($act->icon) {
                                                 'main'
                                                     => 'bg-yellow-400 border-yellow-200 shadow-[0_0_15px_rgba(250,204,21,0.6)]',
@@ -52,9 +95,8 @@
                                                     => 'bg-orange-500 border-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.6)]',
                                                 'side'
                                                     => 'bg-blue-500 border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)]',
-                                                default => 'bg-gray-300 border-gray-200', // Warna untuk data lama
+                                                default => 'bg-gray-300 border-gray-200',
                                             };
-
                                             $tooltip = match ($act->icon) {
                                                 'main' => 'Quest Utama',
                                                 'character' => 'Quest Karakter',
@@ -72,6 +114,7 @@
                                             <div class="relative w-4 h-4 rounded-full border-2 {{ $colorClass }}"></div>
                                         </div>
                                     </div>
+
                                     <div class="flex flex-col">
                                         <span
                                             class="font-black text-gray-800 text-lg leading-tight uppercase tracking-tight">
@@ -114,8 +157,15 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">Belum ada Quest yang
-                                diciptakan.</td>
+                            <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">
+                                @if (request('filter'))
+                                    Tidak ada Quest kategori <strong>{{ ucfirst(request('filter')) }}</strong>. <a
+                                        href="{{ route('admin.activities.index') }}"
+                                        class="text-indigo-600 underline">Lihat Semua</a>.
+                                @else
+                                    Belum ada Quest yang diciptakan.
+                                @endif
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
