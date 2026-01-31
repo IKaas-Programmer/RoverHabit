@@ -1,87 +1,184 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-4xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-gray-800 uppercase tracking-tighter">
-                <i class="fas fa-id-card text-indigo-600 mr-2"></i> Player Information
-            </h1>
-            <p class="text-gray-500 italic">"The only way to level up is to keep moving forward."</p>
-        </div>
+    <div class="container mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+            <div class="flex flex-col md:flex-row">
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div
-                class="bg-indigo-900 rounded-3xl p-8 text-white shadow-2xl border-4 border-indigo-800 flex flex-col items-center">
-                <div
-                    class="w-32 h-32 rounded-full bg-indigo-700 border-4 border-yellow-400 flex items-center justify-center text-5xl font-black shadow-[0_0_20px_rgba(250,204,21,0.4)] mb-4">
-                    {{ substr($user->name, 0, 1) }}
-                </div>
-                <h2 class="text-2xl font-bold mb-1">{{ $user->name }}</h2>
-                <span
-                    class="px-4 py-1 bg-yellow-400 text-indigo-900 rounded-full text-xs font-black uppercase tracking-widest">
-                    {{ $user->role == 'admin' ? 'GRANDMASTER' : 'PLAYER' }}
-                </span>
+                <div class="md:w-1/3 p-8 border-r border-gray-100 flex flex-col">
 
-                <div class="mt-8 w-full space-y-4">
-                    <div class="flex justify-between border-b border-indigo-700 pb-2">
-                        <span class="text-indigo-300 text-sm">Join Date</span>
-                        <span class="font-bold text-sm">{{ $user->created_at->format('M Y') }}</span>
-                    </div>
-                    <div class="flex justify-between border-b border-indigo-700 pb-2">
-                        <span class="text-indigo-300 text-sm">Class</span>
-                        <span class="font-bold text-sm text-yellow-400">Rover-class</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="md:col-span-2 space-y-6">
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-200">
-                    <div class="flex justify-between items-end mb-4">
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Current Power</p>
-                            <h3 class="text-5xl font-black text-indigo-900">LEVEL {{ $user->level }}</h3>
+                    <div class="flex flex-row items-center mb-6">
+                        <div
+                            class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden shrink-0 mr-6 ring-2 ring-indigo-500/20">
+                            <span class="text-2xl font-bold text-indigo-600">
+                                {{ substr($user->name, 0, 2) }}
+                            </span>
                         </div>
-                        <div class="text-right">
-                            <p class="text-xs font-bold text-orange-500 uppercase tracking-widest">Active Streak</p>
-                            <p class="text-2xl font-black text-gray-800"><i class="fas fa-fire"></i>
-                                {{ $user->current_streak }} DAYS</p>
+
+                        <div class="text-left w-full ">
+
+                            <div class="w-full max-w-md">
+
+                                <div onclick="openModal()"
+                                    class="flex items-center justify-between border-b-2 border-gray-300 pb-2 cursor-pointer group hover:border-indigo-500 transition-colors">
+
+                                    <h2 class="text-2xl font-bold text-gray-800 tracking-tight select-none">
+                                        {{ $user->name }}
+                                    </h2>
+
+                                    <button class="text-gray-400 group-hover:text-indigo-600 transition"
+                                        title="Edit Username">
+                                        <i class="fas fa-pencil-alt text-lg"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <p class="text-xs font-medium text-indigo-500 mt-2 uppercase tracking-wide">
+                                {{ $rank ?? 'New Traveler' }}
+                            </p>
+                            <p class="text-[14px] text-gray-400 uppercase font-semibold tracking-widest mt-1">
+                                ID: {{ str_pad($user->id, 5, '0', STR_PAD_LEFT) }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-bold uppercase text-gray-500">
-                            <span>Experience Points</span>
-                            <span>{{ $user->current_xp }} / {{ $user->next_level_xp }} XP</span>
+                    <div class="w-full border-t border-gray-50 pt-6">
+                        <div class="flex justify-between items-end mb-2">
+                            <div>
+                                <span class="text-xs font-bold text-gray-400 uppercase">Level</span>
+                                <p class="text-2xl font-bold text-gray-900 leading-none">{{ $user->level }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="text-xs font-bold text-indigo-600">{{ number_format($exp_percentage, 1) }}%</span>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
-                            <div class="bg-linear-to-r from-indigo-600 to-purple-600 h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(79,70,229,0.5)]"
+
+                        <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-500 transition-all duration-700"
                                 style="width: {{ $exp_percentage }}%"></div>
                         </div>
+
+                        <div class="flex justify-between mt-2 text-[10px] font-medium text-gray-400 uppercase">
+                            <span>{{ number_format($user->current_xp) }} XP</span>
+                            <span>Target: {{ number_format($user->next_level_exp) }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex-1 p-8 bg-gray-50/50">
+                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 ">Status Player
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Traveler Journey
+                            </p>
+                            @php
+                                $diff = $user->created_at->diff(now());
+                                $totalHours = number_format($user->created_at->diffInHours(now()));
+                            @endphp
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-3xl font-black text-gray-800">{{ $diff->y }}</span><span
+                                    class="text-xs font-bold text-gray-400 mr-2">Y</span>
+                                <span class="text-3xl font-black text-gray-800">{{ $diff->m }}</span><span
+                                    class="text-xs font-bold text-gray-400 mr-2">M</span>
+                                <span class="text-3xl font-black text-gray-800">{{ $diff->d }}</span><span
+                                    class="text-xs font-bold text-gray-400">D</span>
+                            </div>
+                            <p class="mt-4 text-[11px] text-gray-500 font-medium">
+                                Total Time: <span class="text-indigo-600 font-bold">{{ $totalHours }} Hours</span>
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Integrity Streak
+                            </p>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-5xl font-black text-orange-500">{{ $user->current_streak }}</span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Days</span>
+                            </div>
+                            <p class="mt-4 text-[11px] text-gray-500 font-medium italic">Keep resonating daily!</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex items-center">
-                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400 font-bold uppercase">Quests Cleared</p>
-                            <p class="text-lg font-black">{{ $user->activityLogs()->count() }}</p>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex items-center">
-                        <div
-                            class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-medal"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400 font-bold uppercase">Badges Earned</p>
-                            <p class="text-lg font-black">{{ $user->badges()->count() }}</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+
+    <div id="editNameModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal()">
+        </div>
+
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
+
+                <form action="{{ route('profile.update_name') }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div
+                                class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <i class="fas fa-user-edit text-indigo-600"></i>
+                            </div>
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Edit Username
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500 mb-4">Please enter your new display name below.</p>
+
+                                    <input type="text" name="name" value="{{ $user->name }}" id="modalInputName"
+                                        class="block w-full rounded-md border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 font-bold "
+                                        placeholder="Enter new username" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="submit"
+                            class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">
+                            Save Changes
+                        </button>
+                        <button type="button" onclick="closeModal()"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('editNameModal').classList.remove('hidden');
+            // Otomatis fokus ke input & select text saat modal terbuka
+            const inputField = document.getElementById('modalInputName');
+            setTimeout(() => {
+                inputField.focus();
+                inputField.select();
+            }, 100);
+        }
+
+        function closeModal() {
+            document.getElementById('editNameModal').classList.add('hidden');
+        }
+
+        // Opsional: Tutup modal dengan tombol ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
 @endsection

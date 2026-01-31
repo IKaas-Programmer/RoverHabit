@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\ActivityController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ListUserController;
 
 /*
@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/status', [DashboardController::class, 'status'])->name('status');
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/history', [DashboardController::class, 'history'])->name('history');
+
+    // Rute khusus profil
+    Route::patch('/profile/update-name', [ProfileController::class, 'updateName'])->name('profile.update_name');
 
     // Admin Area (Prefix: /admin/...)
     Route::prefix('admin')->name('admin.')->group(function () {

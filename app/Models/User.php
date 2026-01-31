@@ -101,15 +101,36 @@ class User extends Authenticatable
 
     public function addXp($amount)
     {
-        // 1. Tambah XP
+        // Tambah XP
         $this->current_xp += $amount;
 
-        // 2. Cek apakah naik level?
-        if ($this->current_xp >= $this->next_level_xp) {
-            $this->levelUp();
-        } else {
-            $this->save();
+        // Loop Level Up (Gunakan WHILE agar bisa naik >1 level sekaligus)
+        // Dan pastikan ada sisa XP yang terbawa (Carry Over)
+        while ($this->current_xp >= $this->next_level_xp) {
+            $this->current_xp -= $this->next_level_xp; // Sisa XP tidak hangus
+            $this->level++;
+
+            // Terapkan Formula Kompleks (Power Curve)
+            $this->next_level_xp = $this->calculateNextXp($this->level);
+
+            // Simpan status untuk notifikasi di UI (optional)
+            session()->flash('level_up', "CONGRATULATIONS! LEVEL $this->level UNLOCKED.");
         }
+
+        // Update Streak Konsistensi
+        $this->updateStreak();
+
+        $this->save();
+    }
+
+    /**
+     * Formula Jembatan: Menghitung Target XP Level Selanjutnya
+     */
+    private function calculateNextXp($currentLevel)
+    {
+        $baseXP = 100;
+        // Formula: (Base * Level ^ 1.5) + (Level * 50)
+        return floor(($baseXP * pow($currentLevel, 1.5)) + ($currentLevel * 50));
     }
 
     private function levelUp()
@@ -121,5 +142,28 @@ class User extends Authenticatable
         $this->next_level_xp = $this->next_level_xp * 1.5;
 
         $this->save();
+    }
+
+    /**
+     * Logika Penjagaan Streak Harian
+     */
+    private function updateStreak()
+    {
+        $today = now()->startOfDay();
+        $lastDate = $this->last_activity_date ? $this->last_activity_date->startOfDay() : null;
+
+        if (!$lastDate) {
+            // Pertama kali aktivitas
+            $this->current_streak = 1;
+        } elseif ($lastDate->isYesterday()) {
+            // Beruntun (Kemarin ada, hari ini ada)
+            $this->current_streak += 1;
+        } elseif ($lastDate->isBefore($today) && !$lastDate->isToday()) {
+            // Bolong (Terakhir aktif bukan kemarin/hari ini), Reset ke 1
+            $this->current_streak = 1;
+        }
+
+        // Update tanggal aktivitas terakhir
+        $this->last_activity_date = now();
     }
 }
