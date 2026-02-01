@@ -5,8 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoverHabit - Gamified Journal</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
         ::-webkit-scrollbar {
             width: 8px;
@@ -29,6 +35,7 @@
             transition: transform 0.3s ease-in-out;
         }
     </style>
+
 </head>
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">

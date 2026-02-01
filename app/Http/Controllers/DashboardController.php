@@ -18,7 +18,7 @@ class DashboardController extends Controller
             ? ($user->current_exp / $user->next_level_exp) * 100
             : 0;
 
-        // 2. Tentukan Rank (Resonator Tier)
+        // 2. Tentukan Rank / Title (Resonator Tier)
         $rank = 'Novice Class';
 
         if ($user->level >= 80)

@@ -8,11 +8,42 @@
                 <div class="md:w-1/3 p-8 border-r border-gray-100 flex flex-col">
 
                     <div class="flex flex-row items-center mb-6">
-                        <div
-                            class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden shrink-0 mr-6 ring-2 ring-indigo-500/20">
-                            <span class="text-2xl font-bold text-indigo-600">
-                                {{ substr($user->name, 0, 2) }}
-                            </span>
+
+                        <div class="mr-6 shrink-0 relative group">
+                            <form id="avatar-form" action="{{ route('profile.avatar') }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PATCH')
+
+                                <label for="avatar-input" class="cursor-pointer block">
+                                    <div
+                                        class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden ring-2 ring-indigo-500/20 relative">
+
+                                        @if ($user->avatar)
+                                            <img src="{{ Storage::url($user->avatar) }}?v={{ time() }}"
+                                                alt="Avatar" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-2xl font-bold text-indigo-600">
+                                                {{ substr($user->name, 0, 2) }}
+                                            </span>
+                                        @endif
+
+                                        <div
+                                            class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <i class="fas fa-camera text-white text-xl drop-shadow-md"></i>
+                                        </div>
+                                    </div>
+
+                                    <input type="file" name="avatar" id="avatar-input" class="hidden" accept="image/*">
+                                </label>
+                                @error('avatar')
+                                    <p class="text-red-500 text-xs mt-2 text-center">{{ $message }}</p>
+                                @enderror
+
+                                @if (session('success'))
+                                    <p class="text-green-500 text-xs mt-2 text-center">{{ session('success') }}</p>
+                                @endif
+                            </form>
                         </div>
 
                         <div class="text-left w-full ">
@@ -34,7 +65,7 @@
 
                             </div>
 
-                            <p class="text-xs font-medium text-indigo-500 mt-2 uppercase tracking-wide">
+                            <p class="text-xs font-medium text-green-500 mt-2 uppercase tracking-wide">
                                 {{ $rank ?? 'New Traveler' }}
                             </p>
                             <p class="text-[14px] text-gray-400 uppercase font-semibold tracking-widest mt-1">
@@ -159,26 +190,43 @@
         </div>
     </div>
 
-    <script>
-        function openModal() {
-            document.getElementById('editNameModal').classList.remove('hidden');
-            // Otomatis fokus ke input & select text saat modal terbuka
-            const inputField = document.getElementById('modalInputName');
-            setTimeout(() => {
-                inputField.focus();
-                inputField.select();
-            }, 100);
-        }
+    <div id="cropModal" class="hidden fixed inset-0 z-60 overflow-y-auto" aria-labelledby="crop-modal-title"
+        role="dialog" aria-modal="true">
 
-        function closeModal() {
-            document.getElementById('editNameModal').classList.add('hidden');
-        }
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
 
-        // Opsional: Tutup modal dengan tombol ESC
-        document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                closeModal();
-            }
-        });
-    </script>
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
+
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4" id="crop-modal-title">Adjust
+                                Avatar</h3>
+
+                            <div class="img-container w-full h-100 bg-gray-100 rounded-lg overflow-hidden">
+                                <img id="image-to-crop" src="" alt="Picture to crop" class="max-w-full">
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Drag to move, scroll to zoom.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+                    <button type="button" id="crop-and-save-btn"
+                        class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto">
+                        Crop & Save
+                    </button>
+                    <button type="button" onclick="closeCropModal()"
+                        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                        Cancel
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 @endsection

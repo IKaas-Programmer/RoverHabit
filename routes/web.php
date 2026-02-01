@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
     // Rute khusus profil
     Route::patch('/profile/update-name', [ProfileController::class, 'updateName'])->name('profile.update_name');
+    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 
     // Admin Area (Prefix: /admin/...)
     Route::prefix('admin')->name('admin.')->group(function () {
