@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\ActivityController as AdminActivity;
 use App\Http\Controllers\Admin\ListUserController;
+use App\Http\Controllers\ActivityController as ActivityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,17 +40,24 @@ Route::middleware('auth')->group(function () {
     // Rute khusus profil
     Route::patch('/profile/update-name', [ProfileController::class, 'updateName'])->name('profile.update_name');
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/equip-badge', [DashboardController::class, 'equipBadge'])->name('profile.equip_badge');
+
+    // ==========================================
+    // UserActivity Routes
+    // ==========================================
+    // Rute untuk menjalankan aktivitas (quest)
+    Route::post('/activities/{activity}/execute', [ActivityController::class, 'execute'])->name('activities.execute');
 
     // Admin Area (Prefix: /admin/...)
     Route::prefix('admin')->name('admin.')->group(function () {
 
         // 1. FITUR Trash dan Restore (Soft Delete)
-        Route::get('/activities/trash', [ActivityController::class, 'trash'])->name('activities.trash');
-        Route::post('/activities/{id}/restore', [ActivityController::class, 'restore'])->name('activities.restore');
-        Route::delete('/activities/{id}/force-delete', [ActivityController::class, 'forceDelete'])->name('activities.forceDelete');
+        Route::get('/activities/trash', [AdminActivity::class, 'trash'])->name('activities.trash');
+        Route::post('/activities/{id}/restore', [AdminActivity::class, 'restore'])->name('activities.restore');
+        Route::delete('/activities/{id}/force-delete', [AdminActivity::class, 'forceDelete'])->name('activities.forceDelete');
 
         // 2. KELOLA CRUD Utama (Secara Lengkap)
-        Route::resource('activities', ActivityController::class);
+        Route::resource('activities', AdminActivity::class);
 
         // ==========================================
         // MODULE 2: DATA LIST USER (PLAYER)

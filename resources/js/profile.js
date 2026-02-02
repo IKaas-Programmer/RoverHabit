@@ -1,6 +1,6 @@
 // File: resources/js/profile.js
 
-// 1. LOGIKA MODAL USERNAME
+//  LOGIKA MODAL USERNAME
 window.openModal = function () {
     const modal = document.getElementById("editNameModal");
     const inputField = document.getElementById("modalInputName");
@@ -23,7 +23,7 @@ window.closeModal = function () {
     }
 };
 
-// 2. LOGIKA CROPPER AVATAR
+// LOGIKA CROPPER AVATAR
 document.addEventListener("DOMContentLoaded", function () {
     let cropper;
     const avatarInput = document.getElementById("avatar-input");
@@ -148,3 +148,14 @@ document.addEventListener("keydown", function (event) {
         if (typeof closeCropModal === "function") closeCropModal();
     }
 });
+
+// LOGIKA MODAL INVENTORY
+window.openInventoryModal = function () {
+    const modal = document.getElementById("inventoryModal");
+    if (modal) modal.classList.remove("hidden");
+};
+
+window.closeInventoryModal = function () {
+    const modal = document.getElementById("inventoryModal");
+    if (modal) modal.classList.add("hidden");
+};

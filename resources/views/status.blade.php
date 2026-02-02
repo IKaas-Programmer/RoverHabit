@@ -65,9 +65,21 @@
 
                             </div>
 
-                            <p class="text-xs font-medium text-green-500 mt-2 uppercase tracking-wide">
-                                {{ $rank ?? 'New Traveler' }}
-                            </p>
+                            <div class="w-full max-w-50 mt-2">
+                                <div onclick="openInventoryModal()"
+                                    class="flex items-center justify-between border-b border-dashed border-gray-300 pb-1 cursor-pointer group hover:border-indigo-500 transition-colors">
+
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wide select-none">
+                                        {{ $user->rank_label }}
+                                    </p>
+
+                                    <button class="text-gray-400 group-hover:text-indigo-600 transition ml-2"
+                                        title="Change Title">
+                                        <i class="fas fa-book text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+
                             <p class="text-[14px] text-gray-400 uppercase font-semibold tracking-widest mt-1">
                                 ID: {{ str_pad($user->id, 5, '0', STR_PAD_LEFT) }}
                             </p>
@@ -226,6 +238,88 @@
 
             </div>
         </div>
+    </div>
+
+    <div id="inventoryModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="inventory-modal-title"
+        role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"
+            onclick="closeInventoryModal()"></div>
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-200">
+
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg font-bold leading-6 text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-medal text-yellow-500"></i> Change Title
+                    </h3>
+
+                    <p class="text-sm text-gray-500 mb-4">Select a title to display on your profile.</p>
+
+                    <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+
+                        <form action="{{ route('profile.equip_badge') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="badge_id" value=""> <button type="submit"
+                                class="w-full flex items-center justify-between p-3 rounded-lg border {{ is_null($user->equipped_badge_id) ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500' : 'border-gray-200 hover:bg-gray-50' }} transition">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="text-sm font-bold text-gray-800">Default Rank</p>
+                                        <p class="text-xs text-gray-500">Based on your Level</p>
+                                    </div>
+                                </div>
+                                @if (is_null($user->equipped_badge_id))
+                                    <span class="text-xs font-bold text-indigo-600"><i class="fas fa-check-circle"></i>
+                                        Equipped</span>
+                                @endif
+                            </button>
+                        </form>
+
+                        @forelse($inventory as $badge)
+                            <form action="{{ route('profile.equip_badge') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="badge_id" value="{{ $badge->id }}">
+                                <button type="submit"
+                                    class="w-full flex items-center justify-between p-3 rounded-lg border {{ $user->equipped_badge_id == $badge->id ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500' : 'border-gray-200 hover:bg-gray-50' }} transition">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 border border-yellow-200">
+                                            @if ($badge->image_path)
+                                                <img src="{{ $badge->image_path }}"
+                                                    class="w-full h-full rounded-full object-cover">
+                                            @else
+                                                <i class="fas fa-certificate"></i>
+                                            @endif
+                                        </div>
+                                        <div class="text-left">
+                                            <p class="text-sm font-bold text-gray-800">{{ $badge->name }}</p>
+                                            <p class="text-xs text-gray-500">{{ $badge->description }}</p>
+                                        </div>
+                                    </div>
+                                    @if ($user->equipped_badge_id == $badge->id)
+                                        <span class="text-xs font-bold text-indigo-600"><i
+                                                class="fas fa-check-circle"></i> Equipped</span>
+                                    @endif
+                                </button>
+                            </form>
+                        @empty
+                            <p class="text-center text-xs text-gray-400 py-4 italic">
+                                You haven't unlocked any badges yet. <br> Complete quests to earn them!
+                            </p>
+                        @endforelse
+
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" onclick="closeInventoryModal()"
+                        class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:w-auto">Close</button>
+                </div>
+            </div>
+        </div>>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>

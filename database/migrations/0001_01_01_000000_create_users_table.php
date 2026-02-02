@@ -20,8 +20,8 @@ return new class extends Migration {
 
             // 2. Kolom Gamifikasi 
             $table->integer('level')->default(1);
-            $table->integer('current_exp')->default(0);
-            $table->integer('next_level_exp')->default(100);
+            $table->integer('current_xp')->default(0);
+            $table->integer('next_level_xp')->default(100);
 
             // 3. Kolom Streak
             // Kita namakan 'current_streak' biar cocok sama Controller sebelumnya
