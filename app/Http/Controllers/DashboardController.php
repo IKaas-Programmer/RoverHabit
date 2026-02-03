@@ -46,9 +46,29 @@ class DashboardController extends Controller
     public function status()
     {
         $user = Auth::user();
+        $now = now();
+
+        //Data Grafik Batang (Temporal)
+        // Menghitung akumulasi quest selesai berdasarkan rentang waktu
+        $chartData = [
+            '1W' => ActivityLog::where('user_id', $user->id)->where('created_at', '>=', $now->copy()->subWeek())->count(),
+            '3M' => ActivityLog::where('user_id', $user->id)->where('created_at', '>=', $now->copy()->subMonths(3))->count(),
+            '6M' => ActivityLog::where('user_id', $user->id)->where('created_at', '>=', $now->copy()->subMonths(6))->count(),
+            '1Y' => ActivityLog::where('user_id', $user->id)->where('created_at', '>=', $now->copy()->subYear())->count(),
+        ];
+        // Skala maksimal untuk menentukan tinggi bar (minimal 1 agar tidak devide by zero)
+        $maxVal = max($chartData) ?: 1;
+
+        // DATA HEXAGON (Radar Chart)
+        // Ambil data stats satu kali saja
+        $stats = $user->characterStats()->orderBy('attributes.id')->get();
+        $radarLabels = $stats->pluck('code')->toArray();
+        $radarData = $stats->pluck('pivot.current_xp')->toArray();
+
+        // Menentukan gelar berdasarkan stat tertinggi
+        $archetype = $this->getArchetype($stats);
         // Tambahkan info umur akun untuk Status Window yang lebih detail
         $accountAge = $user->created_at->diffInDays(now());
-
         // Ambil daftar badge yang dimiliki user untuk Inventory
         $inventory = $user->badges;
 
@@ -56,7 +76,14 @@ class DashboardController extends Controller
             'user' => $user,
             'exp_percentage' => $user['percentage'],
             'inventory' => $inventory,
-            'account_age' => $accountAge
+            'account_age' => $accountAge,
+            'chartData' => $chartData,
+            'maxVal' => $maxVal,
+
+            // DATA BARU UNTUK HEXAGON
+            'radarLabels' => $radarLabels,
+            'radarData' => $radarData,
+            'archetype' => $archetype,
         ]);
     }
 
@@ -93,5 +120,31 @@ class DashboardController extends Controller
         $user->update(['equipped_badge_id' => $request->badge_id]);
 
         return redirect()->back()->with('success', 'Title berhasil diganti!');
+    }
+
+    /**
+     * Helper: Menentukan Class User berdasarkan Stat Tertinggi.
+     */
+    private function getArchetype($statsCollection)
+    {
+        // Jika belum ada XP sama sekali
+        if ($statsCollection->sum('pivot.current_xp') == 0) {
+            return 'Novice';
+        }
+
+        // Ambil atribut dengan XP tertinggi
+        // sortByDesc akan mengurutkan dari XP terbesar ke terkecil
+        $topStat = $statsCollection->sortByDesc('pivot.current_xp')->first();
+
+        // Mapping Kode Atribut ke Nama Class Keren
+        return match ($topStat->code) {
+            'STR' => 'Warlord',      // Dominan Strength
+            'INT' => 'Technomancer', // Dominan Intelligence
+            'VIT' => 'Guardian',     // Dominan Vitality
+            'AGI' => 'Wind Walker',  // Dominan Agility (Target Lari Anda!)
+            'DEX' => 'Artificer',    // Dominan Dexterity
+            'CHA' => 'Diplomat',     // Dominan Charisma
+            default => 'Adventurer'
+        };
     }
 }

@@ -152,7 +152,7 @@
                             @elseif(request()->routeIs('monitor.*'))
                                 Monitoring
                             @else
-                                Halaman Utama
+                                Halaman Profile
                             @endif
                         </h2>
                     </div>

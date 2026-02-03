@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasGamification;
+use App\Models\Attribute;
 
 class User extends Authenticatable
 {
@@ -93,5 +94,15 @@ class User extends Authenticatable
     public function activitylogs()
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    /**
+     * Mengambil data statistik karakter user (Radar Chart Data)
+     */
+    public function characterStats()
+    {
+        return $this->belongsToMany(Attribute::class, 'user_attributes')
+            ->withPivot('current_xp')
+            ->withTimestamps();
     }
 }

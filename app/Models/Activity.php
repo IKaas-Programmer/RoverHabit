@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Attribute;
 
 class Activity extends Model
 {
@@ -37,6 +38,17 @@ class Activity extends Model
     public function logs()
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    /**
+     * Relasi Multi-Attribute Mapping
+     * Mengambil atribut apa saja yang dilatih quest ini beserta bobotnya.
+     */
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, 'activity_attribute')
+            ->withPivot('weight')
+            ->withTimestamps();
     }
 
     // activityLogs relation sudah ada di ActivityLog model

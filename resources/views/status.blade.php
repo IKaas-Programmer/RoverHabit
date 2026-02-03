@@ -93,19 +93,35 @@
                                 <p class="text-2xl font-bold text-gray-900 leading-none">{{ $user->level }}</p>
                             </div>
                             <div class="text-right">
-                                <span
-                                    class="text-xs font-bold text-indigo-600">{{ number_format($exp_percentage, 1) }}%</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Progress</span>
+                                <span class="text-sm font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">
+                                    {{ number_format($exp_percentage, 1) }}%
+                                </span>
                             </div>
                         </div>
 
-                        <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-indigo-500 transition-all duration-700"
+                        <div class="h-4 w-full bg-gray-50 rounded-full overflow-hidden border-2 border-gray-200 p-0.5">
+                            <div class="h-full bg-linear-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000 shadow-[0_0_4px_rgba(99,102,241,0.3)]"
                                 style="width: {{ $exp_percentage }}%"></div>
                         </div>
 
-                        <div class="flex justify-between mt-2 text-[10px] font-medium text-gray-400 uppercase">
-                            <span>{{ number_format($user->current_xp) }} XP</span>
-                            <span>Target: {{ number_format($user->next_level_exp) }}</span>
+                        <div class="flex justify-between mt-3">
+                            <div class="text-left">
+                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                    Current XP</p>
+                                <p class="text-xs font-bold text-gray-700">{{ number_format($user->current_xp) }}</p>
+                            </div>
+
+                            @php
+                                // Menghitung sisa XP yang dibutuhkan untuk Level Up
+                                $remainingXp = $user->next_level_xp - $user->current_xp;
+                            @endphp
+
+                            <div class="text-right">
+                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">Target
+                                    XP</p>
+                                <p class="text-xs font-bold text-gray-700">{{ number_format($user->next_level_xp) }}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -146,14 +162,119 @@
                             <p class="mt-4 text-[11px] text-gray-500 font-medium italic">Keep resonating daily!</p>
                         </div>
                     </div>
-                </div>
 
+                    <div class="mt-8 bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-sm">
+                        <div class="bg-gray-50 px-5 py-3 border-b-2 border-gray-200 flex justify-between items-center">
+                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Activity
+                                Accumulation</span>
+                            <i class="fas fa-chart-column text-gray-400 text-xs"></i>
+                        </div>
+
+                        <div class="p-8">
+                            <div class="relative h-40 flex items-end justify-between gap-3 border-b-2 border-gray-100 pb-1">
+                                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none py-2">
+                                    <div class="border-b border-gray-100 w-full h-0"></div>
+                                    <div class="border-b border-gray-100 w-full h-0"></div>
+                                </div>
+
+                                @foreach ($chartData as $label => $count)
+                                    @php
+                                        $barHeight = ($count / $maxVal) * 100;
+                                    @endphp
+
+                                    <div class="flex-1 flex flex-col items-center group relative z-10">
+                                        <div
+                                            class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-900 text-white text-[10px] font-black px-2 py-1 rounded shadow-xl">
+                                            {{ number_format($count) }} Quests
+                                        </div>
+
+                                        <div class="w-full max-w-11.25 bg-indigo-500 rounded-t-lg transition-all duration-1000 ease-out hover:bg-purple-600 cursor-pointer shadow-[0_-4px_10px_rgba(99,102,241,0.1)]"
+                                            style="height: {{ $barHeight }}%; min-height: 5px;">
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="flex justify-between mt-4">
+                                <div class="flex-1 text-center">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">1 Week</p>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">3 Months</p>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">6 Months</p>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">1 Year</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-white rounded-2xl border-2 border-gray-200 overflow-hidden shadow-sm">
+                        <div class="bg-gray-50 px-5 py-3 border-b-2 border-gray-200 flex justify-between items-center">
+                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Attribute
+                                Resonance</span>
+                            <i class="fas fa-hexagon text-gray-400 text-xs"></i>
+                        </div>
+
+
+
+                        <div class="p-8 flex flex-col items-center">
+
+                            <div class="mb-6 text-center">
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current
+                                    Class</span>
+                                <h2
+                                    class="text-2xl font-black text-indigo-600 uppercase tracking-tighter mt-1 drop-shadow-sm">
+                                    {{ $archetype ?? 'Novice' }}
+                                </h2>
+
+                                {{-- Flavor Text Optional --}}
+                                @if (isset($archetype))
+                                    @if ($archetype == 'Wind Walker')
+                                        <p class="text-[10px] text-gray-400 mt-1 italic font-medium">"Speed is your
+                                            ultimate weapon."</p>
+                                    @elseif($archetype == 'Technomancer')
+                                        <p class="text-[10px] text-gray-400 mt-1 italic font-medium">"Reality bends to your
+                                            logic."</p>
+                                    @elseif($archetype == 'Warlord')
+                                        <p class="text-[10px] text-gray-400 mt-1 italic font-medium">"Strength conquers all
+                                            obstacles."</p>
+                                    @endif
+                                @endif
+                            </div>
+
+                            <div class="w-full max-w-xs aspect-square relative mx-auto">
+                                <canvas id="hexStatsChart" data-labels="{{ json_encode($radarLabels) }}"
+                                    data-values="{{ json_encode($radarData) }}">
+                                </canvas>
+                            </div>
+
+                            <div class="mt-8 grid grid-cols-3 gap-3 w-full">
+                                @foreach ($radarLabels as $index => $label)
+                                    <div
+                                        class="text-center p-3 rounded-xl bg-gray-50 border border-gray-100 group hover:border-indigo-300 transition-colors">
+                                        <p
+                                            class="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 group-hover:text-indigo-500">
+                                            {{ $label }}
+                                        </p>
+                                        <p class="text-sm font-black text-gray-800">
+                                            {{ number_format($radarData[$index] ?? 0) }}
+                                        </p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="editNameModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-        aria-modal="true">
+    <div id="editNameModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
 
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal()">
         </div>
@@ -178,7 +299,8 @@
                                 <div class="mt-2">
                                     <p class="text-sm text-gray-500 mb-4">Please enter your new display name below.</p>
 
-                                    <input type="text" name="name" value="{{ $user->name }}" id="modalInputName"
+                                    <input type="text" name="name" value="{{ $user->name }}"
+                                        id="modalInputName"
                                         class="block w-full rounded-md border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 font-bold "
                                         placeholder="Enter new username" required>
                                 </div>
